@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const roomsRouter = require('./src/routes/rooms');
+const reservationsRouter = require('./src/routes/reservations');
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/rooms', roomsRouter);
+app.use('/api/reservations', reservationsRouter);
 
 const PORT = process.env.PORT || 3000;
 
