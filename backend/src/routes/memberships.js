@@ -1,9 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { assignMembership, getCompanyBalance, getMonthlyReport } = require('../controllers/membershipsController');
 
-router.post('/', assignMembership);
-router.get('/company/:companyId/balance', getCompanyBalance);
-router.get('/report', getMonthlyReport);
+const {
+  assignMembership,
+  getCompanyBalance,
+  getMonthlyReport,
+  updateMembershipPlan,
+  getOverageReview
+} = require('../controllers/membershipsController');
+
+
+router.post('/assign', assignMembership);
+router.get('/balance/:companyId', getCompanyBalance);
+router.get('/monthly-report', getMonthlyReport);
+router.patch('/plans/:planId', updateMembershipPlan);
+router.get('/overages', getOverageReview);
 
 module.exports = router;
