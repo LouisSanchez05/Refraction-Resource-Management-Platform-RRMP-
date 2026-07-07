@@ -37,8 +37,11 @@ const assignMembership = async (req, res) => {
 const getCompanyBalance = async (req, res) => {
   const { companyId } = req.params;
 
-  const month = new Date().getMonth() + 1;
-  const year = new Date().getFullYear();
+  const month =
+    Number(req.query.month) || new Date().getMonth() + 1;
+
+  const year =
+    Number(req.query.year) || new Date().getFullYear();
 
   try {
     const result = await pool.query(
