@@ -153,9 +153,54 @@ const getMonthlyReport = async (req, res) => {
   }
 };
 
+// Get companies with overages for a given month/year
+const getOverageReview = async (req, res) => {
+  const month = Number(req.query.month) || new Date().getMonth() + 1;
+  const year = Number(req.query.year) || new Date().getFullYear();
+
+  try {
+    const result = await pool.query(
+      `SELECT 
+          c.id AS company_id,
+          c.name AS company_name,
+          mp.name AS plan_name,
+          mp.monthly_hours,
+          mp.overage_rate,
+          cm.hours_used,
+          GREATEST(mp.monthly_hours - cm.hours_used, 0) AS remaining_hours,
+          CASE 
+            WHEN cm.hours_used > mp.monthly_hours
+            THEN cm.hours_used - mp.monthly_hours
+            ELSE 0
+          END AS overage_hours,
+          CASE 
+            WHEN cm.hours_used > mp.monthly_hours
+            THEN (cm.hours_used - mp.monthly_hours) * mp.overage_rate
+            ELSE 0
+          END AS overage_cost,
+          cm.month,
+          cm.year
+       FROM company_memberships cm
+       JOIN companies c ON cm.company_id = c.id
+       JOIN membership_plans mp ON cm.plan_id = mp.id
+       WHERE cm.month = $1
+         AND cm.year = $2
+         AND cm.hours_used > mp.monthly_hours
+       ORDER BY overage_hours DESC`,
+      [month, year]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error getting overage review:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 module.exports = {
   assignMembership,
   getCompanyBalance,
   getMonthlyReport,
-  updateMembershipPlan
+  updateMembershipPlan,
+  getOverageReview
 };
