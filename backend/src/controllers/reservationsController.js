@@ -29,7 +29,6 @@ const createReservation = async (req, res) => {
   }
 
   try {
-    // check for conflicts
     const conflict = await pool.query(
       `SELECT * FROM reservations
        WHERE room_id = $1
@@ -42,12 +41,25 @@ const createReservation = async (req, res) => {
       return res.status(409).json({ error: 'Room is already booked for this time' });
     }
 
-    // create the reservation
+    const start = new Date(start_time);
+    const end = new Date(end_time);
+    const hours = (end - start) / (1000 * 60 * 60);
+
     const result = await pool.query(
       `INSERT INTO reservations (room_id, user_id, company_id, start_time, end_time)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
       [room_id, user_id, company_id, start_time, end_time]
+    );
+
+    const month = start.getMonth() + 1;
+    const year = start.getFullYear();
+
+    await pool.query(
+      `UPDATE company_memberships
+       SET hours_used = hours_used + $1
+       WHERE company_id = $2 AND month = $3 AND year = $4`,
+      [hours, company_id, month, year]
     );
 
     res.status(201).json(result.rows[0]);

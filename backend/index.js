@@ -8,6 +8,7 @@ require('dotenv').config();
 const roomsRouter = require('./src/routes/rooms');
 const reservationsRouter = require('./src/routes/reservations');
 const authRouter = require('./src/routes/auth');
+const membershipsRouter = require('./src/routes/memberships');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/memberships', membershipRoutes);
 app.use('/api/rooms', roomsRouter);
 app.use('/api/reservations', reservationsRouter);
 app.use('/auth', authRouter);
+app.use('/api/memberships', membershipsRouter);
 
 const PORT = process.env.PORT || 3000;
 
