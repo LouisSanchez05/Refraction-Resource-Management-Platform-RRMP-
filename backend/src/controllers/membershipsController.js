@@ -84,6 +84,31 @@ const getCompanyBalance = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+const updateMembershipPlan = async (req, res) => {
+  const { planId } = req.params;
+  const { name, monthly_hours, overage_rate } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE membership_plans
+       SET name = COALESCE($1, name),
+           monthly_hours = COALESCE($2, monthly_hours),
+           overage_rate = COALESCE($3, overage_rate)
+       WHERE id = $4
+       RETURNING *`,
+      [name, monthly_hours, overage_rate, planId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Membership plan not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating membership plan:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 // Get monthly report for all companies
 const getMonthlyReport = async (req, res) => {
@@ -131,5 +156,6 @@ const getMonthlyReport = async (req, res) => {
 module.exports = {
   assignMembership,
   getCompanyBalance,
-  getMonthlyReport
+  getMonthlyReport,
+  updateMembershipPlan
 };
