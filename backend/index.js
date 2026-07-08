@@ -9,6 +9,7 @@ const roomsRouter = require('./src/routes/rooms');
 const reservationsRouter = require('./src/routes/reservations');
 const authRouter = require('./src/routes/auth');
 const membershipsRouter = require('./src/routes/memberships');
+const adminRouter = require('./src/routes/admin');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/rooms', roomsRouter);
 app.use('/api/reservations', reservationsRouter);
 app.use('/auth', authRouter);
 app.use('/api/memberships', membershipsRouter);
+app.use('/api/admin', adminRouter);
 
 const PORT = process.env.PORT || 3000;
 
