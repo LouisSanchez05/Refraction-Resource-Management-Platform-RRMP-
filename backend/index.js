@@ -3,6 +3,7 @@ const cors = require('cors');
 const session = require('express-session');
 const passport = require('./src/middleware/passport');
 const membershipRoutes = require('./src/routes/memberships');
+const companyRoutes = require('./src/routes/companies');
 require('dotenv').config();
 
 const roomsRouter = require('./src/routes/rooms');
@@ -28,6 +29,7 @@ app.use('/api/rooms', roomsRouter);
 app.use('/api/reservations', reservationsRouter);
 app.use('/auth', authRouter);
 app.use('/api/memberships', membershipsRouter);
+app.use('/companies', companyRoutes);
 
 const PORT = process.env.PORT || 3000;
 
