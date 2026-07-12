@@ -62,7 +62,27 @@ const createReservation = async (req, res) => {
       [hours, company_id, month, year]
     );
 
-    res.status(201).json(result.rows[0]);
+    const membership = await pool.query(
+      `SELECT cm.hours_used, mp.monthly_hours
+       FROM company_memberships cm
+       JOIN membership_plans mp ON cm.plan_id = mp.id
+       WHERE cm.company_id = $1 AND cm.month = $2 AND cm.year = $3`,
+      [company_id, month, year]
+    );
+
+    let overage_warning = null;
+    if (membership.rows.length > 0) {
+      const { hours_used, monthly_hours } = membership.rows[0];
+      if (hours_used > monthly_hours) {
+        overage_warning = `Warning: Your company has exceeded its monthly allocation by ${hours_used - monthly_hours} hours.`;
+      }
+    }
+
+    res.status(201).json({
+      reservation: result.rows[0],
+      overage_warning
+    });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
