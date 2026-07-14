@@ -20,27 +20,34 @@ function MembershipManagementPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [editingPlanId, setEditingPlanId] = useState(null);
+  const [editPlanName, setEditPlanName] = useState('');
+  const [editMonthlyHours, setEditMonthlyHours] = useState('');
+  const [editOverageRate, setEditOverageRate] = useState('');
 
-  useEffect(() => {
-    async function loadMembershipData() {
-      try {
-        const [companiesData, plansData] =
-          await Promise.all([
-            apiRequest('/api/admin/companies'),
-            apiRequest('/api/memberships/plans'),
-          ]);
-
-        setCompanies(companiesData);
-        setPlans(plansData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+useEffect(() => {
+  async function loadData() {
+    try {
+      await loadMembershipData();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadMembershipData();
-  }, []);
+  loadData();
+}, []);
+
+  async function loadMembershipData() {
+  const [companiesData, plansData] = await Promise.all([
+    apiRequest('/api/admin/companies'),
+    apiRequest('/api/memberships/plans'),
+  ]);
+
+  setCompanies(companiesData);
+  setPlans(plansData);
+}
 
   async function handleAssignMembership(event) {
     event.preventDefault();
@@ -51,27 +58,74 @@ function MembershipManagementPage() {
 
     try {
       await apiRequest('/api/memberships/assign', {
-        method: 'POST',
-        body: JSON.stringify({
-          company_id: Number(companyId),
-          plan_id: Number(planId),
-          month: Number(month),
-          year: Number(year),
-        }),
-      });
+  method: 'POST',
+  body: JSON.stringify({
+    company_id: Number(companyId),
+    plan_id: Number(planId),
+    month: Number(month),
+    year: Number(year),
+  }),
+});
 
-      setMessage(
-        'Membership plan assigned successfully.'
-      );
+await loadMembershipData();
 
-      setCompanyId('');
-      setPlanId('');
+setMessage('Membership plan assigned successfully.');
+setCompanyId('');
+setPlanId('');
     } catch (err) {
       setError(err.message);
     } finally {
       setSubmitting(false);
     }
   }
+
+  function startEditingPlan(plan) {
+  setEditingPlanId(plan.id);
+  setEditPlanName(plan.name);
+  setEditMonthlyHours(plan.monthly_hours);
+  setEditOverageRate(plan.overage_rate);
+  setMessage('');
+  setError('');
+}
+
+function stopEditingPlan() {
+  setEditingPlanId(null);
+  setEditPlanName('');
+  setEditMonthlyHours('');
+  setEditOverageRate('');
+}
+
+async function handleUpdatePlan(planId) {
+  setMessage('');
+  setError('');
+
+  try {
+    const updatedPlan = await apiRequest(
+      `/api/memberships/plans/${planId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          name: editPlanName,
+          monthly_hours: Number(editMonthlyHours),
+          overage_rate: Number(editOverageRate),
+        }),
+      }
+    );
+
+    setPlans((current) =>
+      current.map((plan) =>
+        plan.id === planId
+          ? { ...plan, ...updatedPlan }
+          : plan
+      )
+    );
+
+    setMessage('Membership plan updated successfully.');
+    stopEditingPlan();
+  } catch (err) {
+    setError(err.message);
+  }
+}
 
   if (loading) {
     return (
@@ -207,22 +261,84 @@ function MembershipManagementPage() {
         ) : (
           <div className="plan-grid">
             {plans.map((plan) => (
-              <article
-                className="plan-card"
-                key={plan.id}
-              >
-                <h3>{plan.name}</h3>
+              <article className="plan-card" key={plan.id}>
+                {editingPlanId === plan.id ? (
+                    <div className="plan-edit-form">
+                    <label>
+                        Plan name
+                        <input
+                        type="text"
+                        value={editPlanName}
+                        onChange={(event) =>
+                            setEditPlanName(event.target.value)
+                        }
+                        />
+                    </label>
 
-                <p>
-                  <strong>Monthly hours:</strong>{' '}
-                  {plan.monthly_hours}
-                </p>
+                    <label>
+                        Monthly hours
+                        <input
+                        type="number"
+                        min="0"
+                        value={editMonthlyHours}
+                        onChange={(event) =>
+                            setEditMonthlyHours(event.target.value)
+                        }
+                        />
+                    </label>
 
-                <p>
-                  <strong>Overage rate:</strong> $
-                  {plan.overage_rate} per hour
-                </p>
-              </article>
+                    <label>
+                        Overage rate
+                        <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={editOverageRate}
+                        onChange={(event) =>
+                            setEditOverageRate(event.target.value)
+                        }
+                        />
+                    </label>
+
+                    <div className="plan-actions">
+                        <button
+                        type="button"
+                        onClick={() => handleUpdatePlan(plan.id)}
+                        >
+                        Save Changes
+                        </button>
+
+                        <button
+                        type="button"
+                        onClick={stopEditingPlan}
+                        >
+                        Cancel
+                        </button>
+                    </div>
+                    </div>
+                ) : (
+                    <>
+                    <h3>{plan.name}</h3>
+
+                    <p>
+                        <strong>Monthly hours:</strong>{' '}
+                        {plan.monthly_hours}
+                    </p>
+
+                    <p>
+                        <strong>Overage rate:</strong> $
+                        {plan.overage_rate} per hour
+                    </p>
+
+                    <button
+                        type="button"
+                        onClick={() => startEditingPlan(plan)}
+                    >
+                        Edit Plan
+                    </button>
+                    </>
+                )}
+                </article>
             ))}
           </div>
         )}

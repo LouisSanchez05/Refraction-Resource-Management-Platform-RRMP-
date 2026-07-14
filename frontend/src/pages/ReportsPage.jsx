@@ -7,16 +7,23 @@ function ReportsPage() {
   const [roomUtilization, setRoomUtilization] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     async function loadReports() {
       try {
-        const [monthlyData, overageData, roomData] =
-          await Promise.all([
-            apiRequest('/api/memberships/monthly-report'),
-            apiRequest('/api/memberships/overages'),
-            apiRequest('/api/reports/room-utilization'),
-          ]);
+        const [monthlyData, overageData, roomData] = await Promise.all([
+        apiRequest(
+          `/api/memberships/monthly-report?month=${month}&year=${year}`
+        ),
+        apiRequest(
+          `/api/memberships/overages?month=${month}&year=${year}`
+        ),
+        apiRequest(
+          `/api/reports/room-utilization?month=${month}&year=${year}`
+        ),
+      ]);
 
         setMonthlyReport(monthlyData);
         setOverages(overageData);
@@ -29,7 +36,7 @@ function ReportsPage() {
     }
 
     loadReports();
-  }, []);
+  }, [month, year]);
 
   if (loading) {
     return (
@@ -77,6 +84,30 @@ function ReportsPage() {
           </div>
         )}
       </section>
+          <section className="report-filters">
+      <label>
+        Month
+        <select
+          value={month}
+          onChange={(event) => setMonth(event.target.value)}
+        >
+          {Array.from({ length: 12 }, (_, index) => (
+            <option key={index + 1} value={index + 1}>
+              {index + 1}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        Year
+        <input
+          type="number"
+          value={year}
+          onChange={(event) => setYear(event.target.value)}
+        />
+      </label>
+    </section>
 
       <section className="report-section">
         <h2>Companies With Overages</h2>

@@ -166,3 +166,116 @@
   border: 1px solid #aaa;
   border-radius: 8px;
 }
+
+.nav-links {
+  align-items: center;
+}
+
+.nav-links button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.nav-links .active {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.edit-reservation-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.edit-reservation-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.edit-reservation-form input {
+  padding: 10px;
+}
+.report-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.report-filters label {
+  display: grid;
+  gap: 6px;
+}
+
+.report-filters select,
+.report-filters input {
+  padding: 8px;
+}
+
+.company-form-section {
+  margin-bottom: 24px;
+}
+
+.company-form-section form {
+  display: flex;
+  gap: 12px;
+  max-width: 500px;
+}
+
+.company-form-section input {
+  flex: 1;
+  padding: 10px;
+}
+
+.company-form-section button {
+  padding: 10px 16px;
+}
+
+.company-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.company-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.plan-edit-form {
+  display: grid;
+  gap: 14px;
+}
+
+.plan-edit-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.plan-edit-form input {
+  padding: 10px;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.company-card-overage {
+  border: 2px solid #b91c1c;
+}
+
+.company-card-overage h3 {
+  color: #b91c1c;
+}
+
+.company-users-section {
+  margin-top: 32px;
+}
+
+.company-users-section h2 {
+  margin-bottom: 16px;
+}

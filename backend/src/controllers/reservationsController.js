@@ -1,5 +1,37 @@
 const pool = require('../db/pool');
 
+const getUserReservations = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT
+          res.id,
+          res.room_id,
+          res.user_id,
+          res.company_id,
+          res.start_time,
+          res.end_time,
+          res.status,
+          res.created_at,
+          r.name AS room_name,
+          r.type AS room_type,
+          c.name AS company_name
+       FROM reservations res
+       JOIN rooms r ON res.room_id = r.id
+       JOIN companies c ON res.company_id = c.id
+       WHERE res.user_id = $1
+       ORDER BY res.start_time`,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error getting user reservations:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 // get all reservations for a room
 const getRoomReservations = async (req, res) => {
   const { roomId } = req.params;
@@ -269,6 +301,7 @@ const cancelReservation = async (req, res) => {
 
 module.exports = {
   getRoomReservations,
+  getUserReservations,
   createReservation,
   updateReservation,
   cancelReservation
