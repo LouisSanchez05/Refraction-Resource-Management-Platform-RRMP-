@@ -9,11 +9,35 @@ const {
   getOverageReview
 } = require('../controllers/membershipsController');
 
+const {
+  isAuthenticated,
+  isAdmin
+} = require('../middleware/auth');
 
-router.post('/assign', assignMembership);
-router.get('/balance/:companyId', getCompanyBalance);
-router.get('/monthly-report', getMonthlyReport);
-router.patch('/plans/:planId', updateMembershipPlan);
-router.get('/overages', getOverageReview);
+router.post('/assign', isAdmin, assignMembership);
 
-module.exports = router;
+router.get(
+  '/balance/:companyId',
+  isAuthenticated,
+  getCompanyBalance
+);
+
+router.get(
+  '/monthly-report',
+  isAdmin,
+  getMonthlyReport
+);
+
+router.patch(
+  '/plans/:planId',
+  isAdmin,
+  updateMembershipPlan
+);
+
+router.get(
+  '/overages',
+  isAdmin,
+  getOverageReview
+);
+
+module.exports = router;  

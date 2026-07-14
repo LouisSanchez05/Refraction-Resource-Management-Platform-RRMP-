@@ -8,9 +8,11 @@ const {
   updateCompany
 } = require('../controllers/companiesController');
 
-router.get('/', getCompanies);
-router.get('/:companyId', getCompanyById);
-router.post('/', createCompany);
-router.patch('/:companyId', updateCompany);
+const { isAdmin } = require('../middleware/auth');
+
+router.get('/', isAdmin, getCompanies);
+router.get('/:companyId', isAdmin, getCompanyById);
+router.post('/', isAdmin, createCompany);
+router.patch('/:companyId', isAdmin, updateCompany);
 
 module.exports = router;

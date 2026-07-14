@@ -13,7 +13,10 @@ const reportsRouter = require('./src/routes/reports');
 const companiesRouter = require('./src/routes/companies');
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
 
@@ -38,6 +41,13 @@ const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.json({ message: 'RRMP API is running' });
+});
+
+app.get('/api/session', (req, res) => {
+  res.json({
+    authenticated: req.isAuthenticated(),
+    user: req.user || null
+  });
 });
 
 app.listen(PORT, () => {
