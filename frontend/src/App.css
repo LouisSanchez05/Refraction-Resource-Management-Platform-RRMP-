@@ -109,3 +109,60 @@
   max-width: 300px;
   padding: 8px;
 }
+.membership-section {
+  margin-top: 30px;
+}
+
+.membership-form {
+  display: grid;
+  gap: 16px;
+  max-width: 500px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.membership-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.membership-form input,
+.membership-form select {
+  padding: 10px;
+}
+
+.membership-form button {
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.membership-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.plan-card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.success-message {
+  padding: 12px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+}
+
+.error-message {
+  padding: 12px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+}

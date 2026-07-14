@@ -6,7 +6,8 @@ const {
   getCompanyBalance,
   getMonthlyReport,
   updateMembershipPlan,
-  getOverageReview
+  getOverageReview,
+  getMembershipPlans
 } = require('../controllers/membershipsController');
 
 const {
@@ -39,5 +40,7 @@ router.get(
   isAdmin,
   getOverageReview
 );
+router.get('/plans', getMembershipPlans);
+
 
 module.exports = router;  

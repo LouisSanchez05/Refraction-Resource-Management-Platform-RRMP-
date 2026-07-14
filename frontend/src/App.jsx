@@ -7,6 +7,8 @@ import ReportsPage from './pages/ReportsPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import './App.css';
 import RoomDetailsPage from './pages/RoomDetailsPage';
+import MembershipManagementPage
+  from './pages/MembershipManagementPage';
 
 function App() {
   return (
@@ -14,6 +16,10 @@ function App() {
       <Navbar />
 
 <Routes>
+  <Route
+  path="/admin/memberships"
+  element={<MembershipManagementPage />}
+/>
   <Route
     path="/"
     element={<CompaniesPage />}

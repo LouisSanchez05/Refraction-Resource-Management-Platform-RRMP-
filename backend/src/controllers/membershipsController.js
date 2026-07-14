@@ -33,6 +33,21 @@ const assignMembership = async (req, res) => {
   }
 };
 
+const getMembershipPlans = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, name, monthly_hours, overage_rate, created_at
+       FROM membership_plans
+       ORDER BY name`
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error getting membership plans:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 // Get current monthly balance for a company
 const getCompanyBalance = async (req, res) => {
   const { companyId } = req.params;
@@ -202,5 +217,6 @@ module.exports = {
   getCompanyBalance,
   getMonthlyReport,
   updateMembershipPlan,
-  getOverageReview
+  getOverageReview,
+  getMembershipPlans
 };
