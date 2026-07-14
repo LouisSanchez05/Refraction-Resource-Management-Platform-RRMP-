@@ -5,5 +5,6 @@ const { getRoomReservations, createReservation, cancelReservation } = require('.
 router.get('/room/:roomId', getRoomReservations);
 router.post('/', createReservation);
 router.delete('/:id', cancelReservation);
+router.patch('/:id', updateReservation);
 
 module.exports = router;
