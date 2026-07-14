@@ -89,6 +89,73 @@ const createReservation = async (req, res) => {
   }
 };
 
+// edit a reservation
+const editReservation = async (req, res) => {
+  const { id } = req.params;
+  const { start_time, end_time } = req.body;
+
+  if (!start_time || !end_time) {
+    return res.status(400).json({ error: 'start_time and end_time are required' });
+  }
+
+  try {
+    const existing = await pool.query(
+      'SELECT * FROM reservations WHERE id = $1',
+      [id]
+    );
+
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: 'Reservation not found' });
+    }
+
+    const oldReservation = existing.rows[0];
+    const oldStart = new Date(oldReservation.start_time);
+    const oldEnd = new Date(oldReservation.end_time);
+    const oldHours = (oldEnd - oldStart) / (1000 * 60 * 60);
+
+    const newStart = new Date(start_time);
+    const newEnd = new Date(end_time);
+    const newHours = (newEnd - newStart) / (1000 * 60 * 60);
+    const hoursDiff = newHours - oldHours;
+
+    const conflict = await pool.query(
+      `SELECT * FROM reservations
+       WHERE room_id = $1
+       AND id != $2
+       AND start_time < $3
+       AND end_time > $4`,
+      [oldReservation.room_id, id, end_time, start_time]
+    );
+
+    if (conflict.rows.length > 0) {
+      return res.status(409).json({ error: 'Room is already booked for this time' });
+    }
+
+    const result = await pool.query(
+      `UPDATE reservations
+       SET start_time = $1, end_time = $2
+       WHERE id = $3
+       RETURNING *`,
+      [start_time, end_time, id]
+    );
+
+    const month = newStart.getMonth() + 1;
+    const year = newStart.getFullYear();
+
+    await pool.query(
+      `UPDATE company_memberships
+       SET hours_used = hours_used + $1
+       WHERE company_id = $2 AND month = $3 AND year = $4`,
+      [hoursDiff, oldReservation.company_id, month, year]
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 // cancel a reservation
 const cancelReservation = async (req, res) => {
   const { id } = req.params;
@@ -109,4 +176,4 @@ const cancelReservation = async (req, res) => {
   }
 };
 
-module.exports = { getRoomReservations, createReservation, cancelReservation };
+module.exports = { getRoomReservations, createReservation, editReservation, cancelReservation };
