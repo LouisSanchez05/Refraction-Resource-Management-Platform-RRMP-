@@ -11,6 +11,8 @@ const membershipsRouter = require('./src/routes/memberships');
 const adminRouter = require('./src/routes/admin');
 const reportsRouter = require('./src/routes/reports');
 const companiesRouter = require('./src/routes/companies');
+const auditRouter = require('./src/routes/audit');
+
 const app = express();
 
 app.use(cors({
@@ -18,7 +20,6 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -36,6 +37,7 @@ app.use('/api/memberships', membershipsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/companies', companiesRouter);
+app.use('/api/audit', auditRouter);
 
 const PORT = process.env.PORT || 3000;
 

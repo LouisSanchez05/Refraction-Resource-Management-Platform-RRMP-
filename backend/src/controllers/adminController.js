@@ -1,4 +1,5 @@
 const pool = require('../db/pool');
+const { logAction } = require('./auditController');
 
 // get all users
 const getAllUsers = async (req, res) => {
@@ -35,6 +36,8 @@ const updateUserRole = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    await logAction(req.user?.id, 'UPDATE_ROLE', 'user', id, { new_role: role });
+
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -66,6 +69,9 @@ const createCompany = async (req, res) => {
       'INSERT INTO companies (name) VALUES ($1) RETURNING *',
       [name]
     );
+
+    await logAction(req.user?.id, 'CREATE_COMPANY', 'company', result.rows[0].id, { name });
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -86,6 +92,8 @@ const assignUserToCompany = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    await logAction(req.user?.id, 'ASSIGN_COMPANY', 'user', userId, { company_id: companyId });
 
     res.json(result.rows[0]);
   } catch (err) {
@@ -122,6 +130,9 @@ const createRoom = async (req, res) => {
       'INSERT INTO rooms (name, type, capacity) VALUES ($1, $2, $3) RETURNING *',
       [name, type, capacity]
     );
+
+    await logAction(req.user?.id, 'CREATE_ROOM', 'room', result.rows[0].id, { name, type, capacity });
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -147,6 +158,8 @@ const updateRoom = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Room not found' });
     }
+
+    await logAction(req.user?.id, 'UPDATE_ROOM', 'room', id, { name, type, capacity });
 
     res.json(result.rows[0]);
   } catch (err) {

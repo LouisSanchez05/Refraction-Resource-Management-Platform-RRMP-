@@ -52,3 +52,13 @@ CREATE TABLE IF NOT EXISTS reservations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CHECK (end_time > start_time)
 );
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    action VARCHAR(255) NOT NULL,
+    entity_type VARCHAR(100) NOT NULL,
+    entity_id INTEGER,
+    details JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
