@@ -6,7 +6,10 @@ const {
   updateUserRole,
   getAllCompanies,
   createCompany,
-  assignUserToCompany
+  assignUserToCompany,
+  getAllRooms,
+  createRoom,
+  updateRoom
 } = require('../controllers/adminController');
 
 const isAdmin = (req, res, next) => {
@@ -25,16 +28,15 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-
 router.use(isAdmin);
 
 router.get('/users', getAllUsers);
 router.patch('/users/:id/role', updateUserRole);
 router.get('/companies', getAllCompanies);
 router.post('/companies', createCompany);
-router.patch(
-  '/users/:userId/company/:companyId',
-  assignUserToCompany
-);
+router.patch('/users/:userId/company/:companyId', assignUserToCompany);
+router.get('/rooms', getAllRooms);
+router.post('/rooms', createRoom);
+router.patch('/rooms/:id', updateRoom);
 
 module.exports = router;
