@@ -75,15 +75,28 @@ const createReservation = async (req, res) => {
 
     const start = new Date(start_time);
     const end = new Date(end_time);
+
     if (
-  Number.isNaN(start.getTime()) ||
-  Number.isNaN(end.getTime()) ||
-  end <= start
-) {
-  return res.status(400).json({
-    error: 'End time must be after start time'
-  });
-}
+      Number.isNaN(start.getTime()) ||
+      Number.isNaN(end.getTime()) ||
+      end <= start
+    ) {
+      return res.status(400).json({
+        error: 'End time must be after start time'
+      });
+    }
+
+    // check business hours for members
+    if (req.user && req.user.role === 'member') {
+      const startHour = start.getHours();
+      const endHour = end.getHours();
+      if (startHour < 9 || endHour > 17 || (endHour === 17 && end.getMinutes() > 0)) {
+        return res.status(403).json({
+          error: 'Members can only book rooms between 9am and 5pm'
+        });
+      }
+    }
+
     const hours = (end - start) / (1000 * 60 * 60);
 
     const result = await pool.query(
@@ -159,10 +172,7 @@ const updateReservation = async (req, res) => {
     await client.query('BEGIN');
 
     const existingResult = await client.query(
-      `SELECT *
-       FROM reservations
-       WHERE id = $1
-       FOR UPDATE`,
+      `SELECT * FROM reservations WHERE id = $1 FOR UPDATE`,
       [id]
     );
 
@@ -174,62 +184,41 @@ const updateReservation = async (req, res) => {
     const existing = existingResult.rows[0];
 
     const conflictResult = await client.query(
-      `SELECT id
-       FROM reservations
-       WHERE room_id = $1
-         AND id <> $2
-         AND start_time < $3
-         AND end_time > $4`,
+      `SELECT id FROM reservations
+       WHERE room_id = $1 AND id <> $2 AND start_time < $3 AND end_time > $4`,
       [room_id, id, end_time, start_time]
     );
 
     if (conflictResult.rows.length > 0) {
       await client.query('ROLLBACK');
-      return res.status(409).json({
-        error: 'Room is already booked for this time'
-      });
+      return res.status(409).json({ error: 'Room is already booked for this time' });
     }
 
     const oldStart = new Date(existing.start_time);
     const oldEnd = new Date(existing.end_time);
     const oldHours = (oldEnd - oldStart) / (1000 * 60 * 60);
     const newHours = (end - start) / (1000 * 60 * 60);
-
     const oldMonth = oldStart.getMonth() + 1;
     const oldYear = oldStart.getFullYear();
     const newMonth = start.getMonth() + 1;
     const newYear = start.getFullYear();
 
     const updateResult = await client.query(
-      `UPDATE reservations
-       SET room_id = $1,
-           start_time = $2,
-           end_time = $3
-       WHERE id = $4
-       RETURNING *`,
+      `UPDATE reservations SET room_id = $1, start_time = $2, end_time = $3 WHERE id = $4 RETURNING *`,
       [room_id, start_time, end_time, id]
     );
 
     await client.query(
-      `UPDATE company_memberships
-       SET hours_used = GREATEST(hours_used - $1, 0)
-       WHERE company_id = $2
-         AND month = $3
-         AND year = $4`,
+      `UPDATE company_memberships SET hours_used = GREATEST(hours_used - $1, 0) WHERE company_id = $2 AND month = $3 AND year = $4`,
       [oldHours, existing.company_id, oldMonth, oldYear]
     );
 
     await client.query(
-      `UPDATE company_memberships
-       SET hours_used = hours_used + $1
-       WHERE company_id = $2
-         AND month = $3
-         AND year = $4`,
+      `UPDATE company_memberships SET hours_used = hours_used + $1 WHERE company_id = $2 AND month = $3 AND year = $4`,
       [newHours, existing.company_id, newMonth, newYear]
     );
 
     await client.query('COMMIT');
-
     res.json(updateResult.rows[0]);
   } catch (err) {
     await client.query('ROLLBACK');
@@ -249,10 +238,7 @@ const cancelReservation = async (req, res) => {
     await client.query('BEGIN');
 
     const reservationResult = await client.query(
-      `SELECT *
-       FROM reservations
-       WHERE id = $1
-       FOR UPDATE`,
+      `SELECT * FROM reservations WHERE id = $1 FOR UPDATE`,
       [id]
     );
 
@@ -262,34 +248,21 @@ const cancelReservation = async (req, res) => {
     }
 
     const reservation = reservationResult.rows[0];
-
     const start = new Date(reservation.start_time);
     const end = new Date(reservation.end_time);
     const hours = (end - start) / (1000 * 60 * 60);
     const month = start.getMonth() + 1;
     const year = start.getFullYear();
 
-    await client.query(
-      `DELETE FROM reservations
-       WHERE id = $1`,
-      [id]
-    );
+    await client.query(`DELETE FROM reservations WHERE id = $1`, [id]);
 
     await client.query(
-      `UPDATE company_memberships
-       SET hours_used = GREATEST(hours_used - $1, 0)
-       WHERE company_id = $2
-         AND month = $3
-         AND year = $4`,
+      `UPDATE company_memberships SET hours_used = GREATEST(hours_used - $1, 0) WHERE company_id = $2 AND month = $3 AND year = $4`,
       [hours, reservation.company_id, month, year]
     );
 
     await client.query('COMMIT');
-
-    res.json({
-      message: 'Reservation cancelled',
-      reservation
-    });
+    res.json({ message: 'Reservation cancelled', reservation });
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Error cancelling reservation:', err);

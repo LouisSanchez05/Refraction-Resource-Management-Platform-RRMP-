@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {
-  isAuthenticated
-} = require('../middleware/auth');
-
+const { isAuthenticated } = require('../middleware/auth');
 const {
   getRoomReservations,
   getUserReservations,
@@ -13,12 +10,7 @@ const {
 } = require('../controllers/reservationsController');
 
 router.get('/room/:roomId', getRoomReservations);
-router.get(
-  '/user/:userId',
-  isAuthenticated,
-  getUserReservations
-);
-router.get('/user/:userId', getUserReservations);
+router.get('/user/:userId', isAuthenticated, getUserReservations);
 router.post('/', createReservation);
 router.patch('/:id', updateReservation);
 router.delete('/:id', cancelReservation);
