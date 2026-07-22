@@ -1,3 +1,7 @@
+require('dotenv').config();
+console.log('Google client ID loaded:', Boolean(process.env.GOOGLE_CLIENT_ID));
+console.log('Google secret loaded:', Boolean(process.env.GOOGLE_CLIENT_SECRET));
+
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
