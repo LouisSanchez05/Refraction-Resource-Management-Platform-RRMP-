@@ -39,7 +39,7 @@ router.get('/logout', (req, res) => {
 router.get('/me', (req, res) => {
   if (req.user) {
     res.json(req.user);
-  } catch {
+  } else {
     res.status(401).json({ error: 'Not authenticated' });
   }
 });

@@ -6,7 +6,6 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('./src/middleware/passport');
-require('dotenv').config();
 
 const roomsRouter = require('./src/routes/rooms');
 const reservationsRouter = require('./src/routes/reservations');
@@ -16,6 +15,7 @@ const adminRouter = require('./src/routes/admin');
 const reportsRouter = require('./src/routes/reports');
 const companiesRouter = require('./src/routes/companies');
 const auditRouter = require('./src/routes/audit');
+const quickbooksRouter = require('./src/routes/quickbooks');
 
 const app = express();
 
@@ -42,6 +42,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/companies', companiesRouter);
 app.use('/api/audit', auditRouter);
+app.use('/api/quickbooks', quickbooksRouter);
 
 const PORT = process.env.PORT || 3000;
 
