@@ -11,7 +11,20 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('http://localhost:5173');
+    res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
+  }
+);
+
+// initiate Microsoft OAuth
+router.get('/microsoft', passport.authenticate('microsoft', {
+  scope: ['user.read']
+}));
+
+// Microsoft OAuth callback
+router.get('/microsoft/callback',
+  passport.authenticate('microsoft', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
   }
 );
 
@@ -26,7 +39,7 @@ router.get('/logout', (req, res) => {
 router.get('/me', (req, res) => {
   if (req.user) {
     res.json(req.user);
-  } else {
+  } catch {
     res.status(401).json({ error: 'Not authenticated' });
   }
 });

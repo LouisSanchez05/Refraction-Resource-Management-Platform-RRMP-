@@ -1,5 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const MicrosoftStrategy = require('passport-microsoft').Strategy;
 const pool = require('../db/pool');
 
 passport.use(new GoogleStrategy({
@@ -11,11 +12,34 @@ passport.use(new GoogleStrategy({
     const email = profile.emails[0].value;
     const name = profile.displayName;
 
-    // check if user exists
     let result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
     if (result.rows.length === 0) {
-      // create new user
+      result = await pool.query(
+        'INSERT INTO users (email, name, role) VALUES ($1, $2, $3) RETURNING *',
+        [email, name, 'member']
+      );
+    }
+
+    return done(null, result.rows[0]);
+  } catch (err) {
+    return done(err, null);
+  }
+}));
+
+passport.use(new MicrosoftStrategy({
+  clientID: process.env.MICROSOFT_CLIENT_ID,
+  clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+  callbackURL: process.env.MICROSOFT_CALLBACK_URL || '/auth/microsoft/callback',
+  scope: ['user.read']
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    const email = profile.emails[0].value;
+    const name = profile.displayName;
+
+    let result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
       result = await pool.query(
         'INSERT INTO users (email, name, role) VALUES ($1, $2, $3) RETURNING *',
         [email, name, 'member']
