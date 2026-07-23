@@ -2,50 +2,40 @@
   --refraction-red: #b42320;
   --refraction-red-dark: #921c1a;
   --refraction-red-light: #d93632;
-
   --page-background: #f6f7f9;
   --surface: #ffffff;
   --surface-muted: #f3f4f6;
-
   --text-primary: #20242c;
   --text-secondary: #68707d;
   --border-color: #e1e5ea;
-
   --sidebar-width: 276px;
   --sidebar-collapsed-width: 84px;
-
   --radius-small: 8px;
   --radius-medium: 12px;
   --radius-large: 16px;
-
   --shadow-small:
     0 1px 2px rgba(16, 24, 40, 0.04),
     0 2px 6px rgba(16, 24, 40, 0.04);
 }
-
 * {
   box-sizing: border-box;
 }
-
 body {
   margin: 0;
   background: var(--page-background);
   color: var(--text-primary);
 }
-
 button,
 input,
 select,
 textarea {
   font: inherit;
 }
-
 .app-shell {
   min-height: 100vh;
   display: flex;
   background: var(--page-background);
 }
-
 .sidebar {
   position: sticky;
   top: 0;
@@ -65,11 +55,9 @@ textarea {
   transition: width 180ms ease;
   overflow: hidden;
 }
-
 .sidebar-collapsed {
   width: var(--sidebar-collapsed-width);
 }
-
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -78,14 +66,12 @@ textarea {
   min-height: 54px;
   margin-bottom: 22px;
 }
-
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
 }
-
 .brand-logo {
   width: 48px;
   height: 48px;
@@ -99,21 +85,17 @@ textarea {
   font-weight: 800;
   font-style: italic;
 }
-
 .brand-text {
   display: grid;
   white-space: nowrap;
 }
-
 .brand-text strong {
   font-size: 16px;
 }
-
 .brand-text span {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.68);
 }
-
 .collapse-button {
   width: 38px;
   height: 38px;
@@ -126,21 +108,17 @@ textarea {
   line-height: 1;
   cursor: pointer;
 }
-
 .collapse-button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
-
 .sidebar-navigation {
   flex: 1;
   overflow-y: auto;
 }
-
 .sidebar-group {
   display: grid;
   gap: 6px;
 }
-
 .sidebar-section-label {
   margin: 25px 12px 9px;
   color: rgba(255, 255, 255, 0.57);
@@ -149,7 +127,6 @@ textarea {
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
-
 .sidebar-link,
 .logout-button,
 .login-button {
@@ -168,14 +145,12 @@ textarea {
   cursor: pointer;
   white-space: nowrap;
 }
-
 .sidebar-link:hover,
 .logout-button:hover,
 .login-button:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
 }
-
 .sidebar-link.active {
   background: var(--refraction-red-light);
   color: white;
@@ -183,7 +158,6 @@ textarea {
     inset 3px 0 0 rgba(255, 255, 255, 0.8),
     0 3px 10px rgba(70, 0, 0, 0.12);
 }
-
 .sidebar-icon {
   width: 28px;
   flex-shrink: 0;
@@ -191,19 +165,16 @@ textarea {
   place-items: center;
   font-size: 21px;
 }
-
 .sidebar-label {
   font-size: 15px;
   font-weight: 500;
 }
-
 .sidebar-footer {
   display: grid;
   gap: 9px;
   padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
-
 .sidebar-user {
   display: flex;
   align-items: center;
@@ -211,7 +182,6 @@ textarea {
   min-height: 52px;
   padding: 6px 10px;
 }
-
 .user-avatar {
   width: 36px;
   height: 36px;
@@ -223,30 +193,25 @@ textarea {
   font-size: 12px;
   font-weight: 700;
 }
-
 .user-details {
   min-width: 0;
   display: grid;
 }
-
 .user-details strong {
   overflow: hidden;
   font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .user-details span {
   color: rgba(255, 255, 255, 0.65);
   font-size: 12px;
   text-transform: capitalize;
 }
-
 .app-main {
   min-width: 0;
   flex: 1;
 }
-
 .topbar {
   min-height: 78px;
   display: flex;
@@ -255,7 +220,6 @@ textarea {
   border-bottom: 1px solid var(--border-color);
   background: var(--surface);
 }
-
 .topbar-eyebrow {
   margin: 0 0 2px;
   color: var(--text-secondary);
@@ -264,21 +228,18 @@ textarea {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-
 .topbar-title {
   margin: 0;
   color: var(--text-primary);
   font-size: 18px;
   font-weight: 650;
 }
-
 .page-content {
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
   padding: 32px 36px 56px;
 }
-
 .page-content > h1,
 .page-section > h1 {
   margin: 0 0 24px;
@@ -288,41 +249,35 @@ textarea {
   letter-spacing: -0.025em;
   text-align: left;
 }
-
 @media (max-width: 850px) {
   .sidebar {
     width: var(--sidebar-collapsed-width);
   }
-
   .brand-text,
   .sidebar-label,
   .sidebar-section-label,
   .user-details {
     display: none;
   }
-
   .page-content {
     padding: 24px 20px 40px;
   }
-
   .topbar {
     padding-inline: 20px;
   }
 }
-
-
 .company-grid,
 .room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
-
 .company-card,
 .room-card {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  background: var(--surface);
 }
 .booking-form {
   margin: 24px 0;
@@ -330,36 +285,31 @@ textarea {
   border: 1px solid #ddd;
   border-radius: 10px;
 }
-
 .booking-form form {
   display: grid;
   gap: 16px;
   max-width: 420px;
 }
-
 .booking-form label {
   display: grid;
   gap: 6px;
 }
-
 .booking-form input {
   padding: 10px;
 }
-
 .booking-form button {
   padding: 10px 16px;
   cursor: pointer;
 }
-
 .reservation-list {
   display: grid;
   gap: 12px;
 }
-
 .reservation-card {
   padding: 16px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  background: var(--surface);
 }
 .dashboard-card {
   max-width: 600px;
@@ -367,41 +317,37 @@ textarea {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  background: var(--surface);
 }
-
 .report-section {
   margin-bottom: 32px;
 }
-
 .report-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
-
 .report-card {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  background: var(--surface);
 }
-
 .user-grid {
   display: grid;
   gap: 20px;
 }
-
 .user-card {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  background: var(--surface);
 }
-
 .user-card label {
   display: grid;
   gap: 6px;
   margin-top: 14px;
 }
-
 .user-card select {
   max-width: 300px;
   padding: 8px;
@@ -409,7 +355,6 @@ textarea {
 .membership-section {
   margin-top: 30px;
 }
-
 .membership-form {
   display: grid;
   gap: 16px;
@@ -418,56 +363,46 @@ textarea {
   border: 1px solid #ddd;
   border-radius: 10px;
 }
-
 .membership-form label {
   display: grid;
   gap: 6px;
 }
-
 .membership-form input,
 .membership-form select {
   padding: 10px;
 }
-
 .membership-form button {
   padding: 10px 16px;
   cursor: pointer;
 }
-
 .membership-form button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
-
 .plan-grid {
   display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
 }
-
 .plan-card {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  background: var(--surface);
 }
-
 .success-message {
   padding: 12px;
   border: 1px solid #aaa;
   border-radius: 8px;
 }
-
 .error-message {
   padding: 12px;
   border: 1px solid #aaa;
   border-radius: 8px;
 }
-
 .nav-links {
   align-items: center;
 }
-
 .nav-links button {
   padding: 8px 14px;
   border: 1px solid #ccc;
@@ -475,23 +410,19 @@ textarea {
   background: white;
   cursor: pointer;
 }
-
 .nav-links .active {
   font-weight: 700;
   text-decoration: underline;
 }
-
 .edit-reservation-form {
   display: grid;
   gap: 14px;
   margin-top: 16px;
 }
-
 .edit-reservation-form label {
   display: grid;
   gap: 6px;
 }
-
 .edit-reservation-form input {
   padding: 10px;
 }
@@ -500,79 +431,84 @@ textarea {
   gap: 16px;
   margin-bottom: 24px;
 }
-
 .report-filters label {
   display: grid;
   gap: 6px;
 }
-
 .report-filters select,
 .report-filters input {
   padding: 8px;
 }
-
 .company-form-section {
   margin-bottom: 24px;
 }
-
 .company-form-section form {
   display: flex;
   gap: 12px;
   max-width: 500px;
 }
-
 .company-form-section input {
   flex: 1;
   padding: 10px;
 }
-
 .company-form-section button {
   padding: 10px 16px;
 }
-
 .company-actions {
   display: flex;
   gap: 10px;
   margin-top: 12px;
 }
-
 .company-card input {
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
 }
-
 .plan-edit-form {
   display: grid;
   gap: 14px;
 }
-
 .plan-edit-form label {
   display: grid;
   gap: 6px;
 }
-
 .plan-edit-form input {
   padding: 10px;
 }
-
 .plan-actions {
   display: flex;
   gap: 10px;
 }
-
 .company-card-overage {
   border: 2px solid #b91c1c;
 }
-
 .company-card-overage h3 {
   color: #b91c1c;
 }
-
 .company-users-section {
   margin-top: 32px;
 }
-
 .company-users-section h2 {
   margin-bottom: 16px;
+}
+.room-card h2,
+.room-card p,
+.room-card a,
+.company-card h2,
+.company-card h3,
+.company-card p,
+.dashboard-card h2,
+.dashboard-card p,
+.report-card h2,
+.report-card p,
+.user-card h2,
+.user-card p,
+.plan-card h2,
+.plan-card p,
+.reservation-card h2,
+.reservation-card p {
+  color: var(--text-primary);
+}
+main h1 {
+  color: var(--text-primary);
 }
