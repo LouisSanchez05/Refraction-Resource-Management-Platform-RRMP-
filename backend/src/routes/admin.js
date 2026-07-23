@@ -9,7 +9,8 @@ const {
   assignUserToCompany,
   getAllRooms,
   createRoom,
-  updateRoom
+  updateRoom,
+  deleteRoom
 } = require('../controllers/adminController');
 
 const isAdmin = (req, res, next) => {
@@ -38,5 +39,6 @@ router.patch('/users/:userId/company/:companyId', assignUserToCompany);
 router.get('/rooms', getAllRooms);
 router.post('/rooms', createRoom);
 router.patch('/rooms/:id', updateRoom);
+router.delete('/rooms/:id', deleteRoom);
 
 module.exports = router;
