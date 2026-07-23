@@ -1,34 +1,57 @@
 const express = require('express');
 const passport = require('passport');
+
 const router = express.Router();
 
-// initiate Google OAuth
-router.get('/google', passport.authenticate('google', {
-  scope: ['profile', 'email']
-}));
+const FRONTEND_URL = 'http://localhost:5173';
+
+// Start Google OAuth
+router.get(
+  '/google',
+  passport.authenticate('google', {
+    scope: ['openid', 'profile', 'email'],
+    prompt: 'select_account',
+  })
+);
 
 // Google OAuth callback
-router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+router.get(
+  '/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: `${FRONTEND_URL}/login`,
+  }),
   (req, res) => {
-    res.json({ message: 'Login successful', user: req.user });
+    res.redirect(`${FRONTEND_URL}/dashboard`);
   }
 );
 
-// logout
-router.get('/logout', (req, res) => {
-  req.logout(() => {
-    res.json({ message: 'Logged out' });
+// Log out
+router.get('/logout', (req, res, next) => {
+  req.logout((logoutError) => {
+    if (logoutError) {
+      return next(logoutError);
+    }
+
+    req.session.destroy((sessionError) => {
+      if (sessionError) {
+        return next(sessionError);
+      }
+
+      res.clearCookie('connect.sid');
+      return res.redirect(FRONTEND_URL);
+    });
   });
 });
 
-// get current user
+// Get current user
 router.get('/me', (req, res) => {
-  if (req.user) {
-    res.json(req.user);
-  } else {
-    res.status(401).json({ error: 'Not authenticated' });
+  if (req.isAuthenticated()) {
+    return res.json({ user: req.user });
   }
+
+  return res.status(401).json({
+    error: 'Not authenticated',
+  });
 });
 
 module.exports = router;

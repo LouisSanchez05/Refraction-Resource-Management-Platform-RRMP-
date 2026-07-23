@@ -23,6 +23,10 @@
     0 2px 6px rgba(16, 24, 40, 0.04);
 }
 
+/* -----------------------------
+   Base application layout
+----------------------------- */
+
 * {
   box-sizing: border-box;
 }
@@ -46,6 +50,15 @@ textarea {
   background: var(--page-background);
 }
 
+.app-main {
+  min-width: 0;
+  flex: 1;
+}
+
+/* -----------------------------
+   Sidebar
+----------------------------- */
+
 .sidebar {
   position: sticky;
   top: 0;
@@ -55,15 +68,14 @@ textarea {
   display: flex;
   flex-direction: column;
   padding: 18px 14px;
-  background:
-    linear-gradient(
-      180deg,
-      var(--refraction-red) 0%,
-      #a61f1d 100%
-    );
-  color: white;
-  transition: width 180ms ease;
   overflow: hidden;
+  color: white;
+  background: linear-gradient(
+    180deg,
+    var(--refraction-red) 0%,
+    #a61f1d 100%
+  );
+  transition: width 180ms ease;
 }
 
 .sidebar-collapsed {
@@ -71,19 +83,19 @@ textarea {
 }
 
 .sidebar-header {
+  min-height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 54px;
   margin-bottom: 22px;
 }
 
 .brand {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 0;
 }
 
 .brand-logo {
@@ -92,12 +104,19 @@ textarea {
   flex-shrink: 0;
   display: grid;
   place-items: center;
+  overflow: hidden;
   border-radius: 11px;
   background: var(--refraction-red-light);
   color: white;
   font-size: 24px;
   font-weight: 800;
   font-style: italic;
+}
+
+.brand-logo img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
 .brand-text {
@@ -110,8 +129,8 @@ textarea {
 }
 
 .brand-text span {
-  font-size: 12px;
   color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
 }
 
 .collapse-button {
@@ -153,20 +172,20 @@ textarea {
 .sidebar-link,
 .logout-button,
 .login-button {
+  width: 100%;
   min-height: 46px;
   display: flex;
   align-items: center;
   gap: 13px;
-  width: 100%;
   padding: 10px 13px;
   border: 0;
   border-radius: 9px;
   background: transparent;
   color: rgba(255, 255, 255, 0.91);
-  text-decoration: none;
   text-align: left;
-  cursor: pointer;
+  text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .sidebar-link:hover,
@@ -205,10 +224,10 @@ textarea {
 }
 
 .sidebar-user {
+  min-height: 52px;
   display: flex;
   align-items: center;
   gap: 11px;
-  min-height: 52px;
   padding: 6px 10px;
 }
 
@@ -242,10 +261,9 @@ textarea {
   text-transform: capitalize;
 }
 
-.app-main {
-  min-width: 0;
-  flex: 1;
-}
+/* -----------------------------
+   Top bar and page content
+----------------------------- */
 
 .topbar {
   min-height: 78px;
@@ -261,8 +279,8 @@ textarea {
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .topbar-title {
@@ -279,8 +297,8 @@ textarea {
   padding: 32px 36px 56px;
 }
 
-.page-content > h1,
-.page-section > h1 {
+.page-content h1,
+.page-section h1 {
   margin: 0 0 24px;
   color: var(--text-primary);
   font-size: 32px;
@@ -288,6 +306,308 @@ textarea {
   letter-spacing: -0.025em;
   text-align: left;
 }
+
+.page-content h2 {
+  color: var(--text-primary);
+}
+
+/* -----------------------------
+   Buttons
+----------------------------- */
+
+button {
+  border-radius: var(--radius-small);
+}
+
+button:not(.collapse-button):not(.logout-button) {
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  background: var(--refraction-red);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:not(.collapse-button):not(.logout-button):hover {
+  background: var(--refraction-red-dark);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* -----------------------------
+   Inputs
+----------------------------- */
+
+input,
+select,
+textarea {
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #cfd5dc;
+  border-radius: var(--radius-small);
+  background: white;
+  color: var(--text-primary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--refraction-red);
+  outline: 3px solid rgba(180, 35, 32, 0.11);
+}
+
+/* -----------------------------
+   Shared cards
+----------------------------- */
+
+.company-card,
+.room-card,
+.reservation-card,
+.dashboard-card,
+.report-card,
+.user-card,
+.plan-card,
+.booking-form,
+.membership-form {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  background: var(--surface);
+  box-shadow: var(--shadow-small);
+}
+
+.company-card,
+.room-card,
+.report-card,
+.user-card,
+.plan-card {
+  padding: 22px;
+}
+
+.company-card:hover,
+.room-card:hover {
+  border-color: #cbd1d8;
+  transform: translateY(-1px);
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease;
+}
+
+/* -----------------------------
+   Companies and rooms
+----------------------------- */
+
+.company-grid,
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.company-form-section {
+  margin-bottom: 24px;
+}
+
+.company-form-section form {
+  max-width: 500px;
+  display: flex;
+  gap: 12px;
+}
+
+.company-form-section input {
+  flex: 1;
+}
+
+.company-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.company-card input {
+  width: 100%;
+}
+
+.company-card-overage {
+  border: 2px solid var(--refraction-red);
+}
+
+.company-card-overage h3 {
+  color: var(--refraction-red);
+}
+
+.company-users-section {
+  margin-top: 32px;
+}
+
+.company-users-section h2 {
+  margin-bottom: 16px;
+}
+
+/* -----------------------------
+   Booking and reservations
+----------------------------- */
+
+.booking-form {
+  margin: 24px 0;
+  padding: 22px;
+}
+
+.booking-form form {
+  max-width: 420px;
+  display: grid;
+  gap: 16px;
+}
+
+.booking-form label,
+.edit-reservation-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.reservation-list {
+  display: grid;
+  gap: 12px;
+}
+
+.reservation-card {
+  padding: 18px;
+}
+
+.edit-reservation-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* -----------------------------
+   Dashboard
+----------------------------- */
+
+.dashboard-card {
+  width: 100%;
+  max-width: none;
+  margin-bottom: 20px;
+  padding: 24px;
+}
+
+/* -----------------------------
+   Reports
+----------------------------- */
+
+.report-section {
+  margin-bottom: 32px;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.report-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.report-filters label {
+  display: grid;
+  gap: 6px;
+}
+
+/* -----------------------------
+   Users
+----------------------------- */
+
+.user-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.user-card label {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.user-card select {
+  width: 100%;
+  max-width: 300px;
+}
+
+/* -----------------------------
+   Memberships
+----------------------------- */
+
+.membership-section {
+  margin-top: 30px;
+}
+
+.membership-form {
+  max-width: 500px;
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.membership-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.plan-edit-form {
+  display: grid;
+  gap: 14px;
+}
+
+.plan-edit-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* -----------------------------
+   Feedback messages
+----------------------------- */
+
+.success-message,
+.error-message {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-small);
+}
+
+.success-message {
+  border: 1px solid #86c99a;
+  background: #eefaf1;
+  color: #236c36;
+}
+
+.error-message {
+  border: 1px solid #e1a19e;
+  background: #fff1f0;
+  color: #9f2622;
+}
+
+/* -----------------------------
+   Responsive layout
+----------------------------- */
 
 @media (max-width: 850px) {
   .sidebar {
@@ -308,271 +628,13 @@ textarea {
   .topbar {
     padding-inline: 20px;
   }
-}
 
+  .company-form-section form {
+    flex-direction: column;
+  }
 
-.company-grid,
-.room-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.company-card,
-.room-card {
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-.booking-form {
-  margin: 24px 0;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.booking-form form {
-  display: grid;
-  gap: 16px;
-  max-width: 420px;
-}
-
-.booking-form label {
-  display: grid;
-  gap: 6px;
-}
-
-.booking-form input {
-  padding: 10px;
-}
-
-.booking-form button {
-  padding: 10px 16px;
-  cursor: pointer;
-}
-
-.reservation-list {
-  display: grid;
-  gap: 12px;
-}
-
-.reservation-card {
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-.dashboard-card {
-  max-width: 600px;
-  margin-bottom: 20px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.report-section {
-  margin-bottom: 32px;
-}
-
-.report-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.report-card {
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.user-grid {
-  display: grid;
-  gap: 20px;
-}
-
-.user-card {
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.user-card label {
-  display: grid;
-  gap: 6px;
-  margin-top: 14px;
-}
-
-.user-card select {
-  max-width: 300px;
-  padding: 8px;
-}
-.membership-section {
-  margin-top: 30px;
-}
-
-.membership-form {
-  display: grid;
-  gap: 16px;
-  max-width: 500px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.membership-form label {
-  display: grid;
-  gap: 6px;
-}
-
-.membership-form input,
-.membership-form select {
-  padding: 10px;
-}
-
-.membership-form button {
-  padding: 10px 16px;
-  cursor: pointer;
-}
-
-.membership-form button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.plan-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.plan-card {
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-.success-message {
-  padding: 12px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
-}
-
-.error-message {
-  padding: 12px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
-}
-
-.nav-links {
-  align-items: center;
-}
-
-.nav-links button {
-  padding: 8px 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: white;
-  cursor: pointer;
-}
-
-.nav-links .active {
-  font-weight: 700;
-  text-decoration: underline;
-}
-
-.edit-reservation-form {
-  display: grid;
-  gap: 14px;
-  margin-top: 16px;
-}
-
-.edit-reservation-form label {
-  display: grid;
-  gap: 6px;
-}
-
-.edit-reservation-form input {
-  padding: 10px;
-}
-.report-filters {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.report-filters label {
-  display: grid;
-  gap: 6px;
-}
-
-.report-filters select,
-.report-filters input {
-  padding: 8px;
-}
-
-.company-form-section {
-  margin-bottom: 24px;
-}
-
-.company-form-section form {
-  display: flex;
-  gap: 12px;
-  max-width: 500px;
-}
-
-.company-form-section input {
-  flex: 1;
-  padding: 10px;
-}
-
-.company-form-section button {
-  padding: 10px 16px;
-}
-
-.company-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.company-card input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-}
-
-.plan-edit-form {
-  display: grid;
-  gap: 14px;
-}
-
-.plan-edit-form label {
-  display: grid;
-  gap: 6px;
-}
-
-.plan-edit-form input {
-  padding: 10px;
-}
-
-.plan-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.company-card-overage {
-  border: 2px solid #b91c1c;
-}
-
-.company-card-overage h3 {
-  color: #b91c1c;
-}
-
-.company-users-section {
-  margin-top: 32px;
-}
-
-.company-users-section h2 {
-  margin-bottom: 16px;
+  .report-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

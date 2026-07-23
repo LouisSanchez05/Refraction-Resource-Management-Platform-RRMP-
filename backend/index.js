@@ -1,61 +1,70 @@
 require('dotenv').config();
-console.log('Google client ID loaded:', Boolean(process.env.GOOGLE_CLIENT_ID));
-console.log('Google secret loaded:', Boolean(process.env.GOOGLE_CLIENT_SECRET));
+
+console.log('Backend started from:', __dirname);
+console.log('Working directory:', process.cwd());
 
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const passport = require('./src/middleware/passport');
-require('dotenv').config();
+const passport = require('passport');
 
-const roomsRouter = require('./src/routes/rooms');
-const reservationsRouter = require('./src/routes/reservations');
-const authRouter = require('./src/routes/auth');
-const membershipsRouter = require('./src/routes/memberships');
-const adminRouter = require('./src/routes/admin');
-const reportsRouter = require('./src/routes/reports');
-const companiesRouter = require('./src/routes/companies');
-const auditRouter = require('./src/routes/audit');
+require('./src/middleware/passport');
+
+const authRoutes = require('./src/routes/auth');
+const companyRoutes = require('./src/routes/companies');
+const roomRoutes = require('./src/routes/rooms');
+const reservationRoutes = require('./src/routes/reservations');
+const membershipRoutes = require('./src/routes/memberships');
+const reportRoutes = require('./src/routes/reports');
+const adminRoutes = require('./src/routes/admin');
+const auditRoutes = require('./src/routes/audit');
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'development-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/rooms', roomsRouter);
-app.use('/api/reservations', reservationsRouter);
-app.use('/auth', authRouter);
-app.use('/api/memberships', membershipsRouter);
-app.use('/api/admin', adminRouter);
-app.use('/api/reports', reportsRouter);
-app.use('/api/companies', companiesRouter);
-app.use('/api/audit', auditRouter);
+// Authentication
+app.use('/auth', authRoutes);
+
+// API routes
+app.use('/api/companies', companyRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/memberships', membershipRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/audit', auditRoutes);
+
+// Basic test route
+app.get('/', (req, res) => {
+  res.json({ message: 'RRMP backend is running' });
+});
 
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.json({ message: 'RRMP API is running' });
-});
-
-app.get('/api/session', (req, res) => {
-  res.json({
-    authenticated: req.isAuthenticated(),
-    user: req.user || null
-  });
-});
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`NEW RRMP SERVER running on port ${PORT}`);
 });

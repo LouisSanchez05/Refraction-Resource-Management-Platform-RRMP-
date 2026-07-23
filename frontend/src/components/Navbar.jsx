@@ -70,8 +70,9 @@ function Navbar() {
     <aside className={`sidebar ${collapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="brand">
+          
           <div className="brand-logo">
-  <img src="/refraction-logo.svg" alt="Refraction" />
+<img src="/refraction-logo.png" alt="Refraction" />
 </div>
 
           {!collapsed && (
