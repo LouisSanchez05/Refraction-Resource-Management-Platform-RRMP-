@@ -9,6 +9,7 @@ const {
   getOverageReview,
   getMembershipPlans,
   createMembershipPlan,
+  deleteMembershipPlan,
 } = require('../controllers/membershipsController');
 
 
@@ -44,6 +45,12 @@ router.get(
   getOverageReview
 );
 router.get('/plans', getMembershipPlans);
+
+router.delete(
+  '/plans/:planId',
+  isAdmin,
+  deleteMembershipPlan
+);
 
 
 module.exports = router;  

@@ -15,6 +15,7 @@ function MembershipManagementPage() {
   const [year, setYear] = useState(
     new Date().getFullYear()
   );
+  const [deletingPlanId, setDeletingPlanId] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -199,6 +200,46 @@ async function handleUpdatePlan(planId) {
     stopEditingPlan();
   } catch (err) {
     setError(err.message);
+  }
+}
+async function handleDeletePlan(plan) {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete "${plan.name}"?\n\n` +
+      'Plans currently assigned to companies cannot be deleted.'
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  setMessage('');
+  setError('');
+  setPlanMessage('');
+  setDeletingPlanId(plan.id);
+
+  try {
+    await apiRequest(
+      `/api/memberships/plans/${plan.id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+
+    setPlans((current) =>
+      current.filter(
+        (currentPlan) => currentPlan.id !== plan.id
+      )
+    );
+
+    if (String(planId) === String(plan.id)) {
+      setPlanId('');
+    }
+
+    setMessage('Membership plan deleted successfully.');
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setDeletingPlanId(null);
   }
 }
 
@@ -401,6 +442,26 @@ return (
             ? 'Creating...'
             : 'Create Membership Plan'}
         </button>
+        <div className="plan-actions">
+  <button
+    type="button"
+    onClick={() => startEditingPlan(plan)}
+    disabled={deletingPlanId === plan.id}
+  >
+    Edit Plan
+  </button>
+
+  <button
+    type="button"
+    onClick={() => handleDeletePlan(plan)}
+    disabled={deletingPlanId === plan.id}
+  >
+    {deletingPlanId === plan.id
+      ? 'Deleting...'
+      : 'Delete Plan'}
+  </button>
+</div>
+
       </form>
 
       {planMessage && (

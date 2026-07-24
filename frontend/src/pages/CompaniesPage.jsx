@@ -49,9 +49,13 @@ function CompaniesPage() {
   useEffect(() => {
     async function loadCompanies() {
       try {
-        const data = await apiRequest(
-          '/api/admin/companies?month=7&year=2026'
-        );
+        const currentDate = new Date();
+          const currentMonth = currentDate.getMonth() + 1;
+          const currentYear = currentDate.getFullYear();
+
+          const data = await apiRequest(
+            `/api/admin/companies?month=${currentMonth}&year=${currentYear}`
+          );
 
         setCompanies(data);
       } catch (err) {

@@ -97,6 +97,56 @@ const createMembershipPlan = async (req, res) => {
   }
 };
 
+const deleteMembershipPlan = async (req, res) => {
+  const { planId } = req.params;
+
+  try {
+    const existingPlan = await pool.query(
+      `SELECT id, name
+       FROM membership_plans
+       WHERE id = $1`,
+      [planId]
+    );
+
+    if (existingPlan.rows.length === 0) {
+      return res.status(404).json({
+        error: 'Membership plan not found',
+      });
+    }
+
+    const membershipsUsingPlan = await pool.query(
+      `SELECT COUNT(*)::int AS count
+       FROM company_memberships
+       WHERE plan_id = $1`,
+      [planId]
+    );
+
+    if (membershipsUsingPlan.rows[0].count > 0) {
+      return res.status(409).json({
+        error:
+          'This membership plan is assigned to one or more companies and cannot be deleted.',
+      });
+    }
+
+    const result = await pool.query(
+      `DELETE FROM membership_plans
+       WHERE id = $1
+       RETURNING *`,
+      [planId]
+    );
+
+    res.json({
+      message: 'Membership plan deleted',
+      plan: result.rows[0],
+    });
+  } catch (err) {
+    console.error('Error deleting membership plan:', err);
+    res.status(500).json({
+      error: 'Server error',
+    });
+  }
+};
+
 // Get current monthly balance for a company
 const getCompanyBalance = async (req, res) => {
   const { companyId } = req.params;
@@ -269,4 +319,5 @@ module.exports = {
   getOverageReview,
   getMembershipPlans,
   createMembershipPlan,
+  deleteMembershipPlan,
 };
