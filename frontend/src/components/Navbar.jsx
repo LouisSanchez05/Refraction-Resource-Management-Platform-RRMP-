@@ -22,7 +22,7 @@ const memberLinks = [
 
 const adminLinks = [
   {
-    to: '/',
+    to: '/companies',
     label: 'Companies',
     icon: '▤'
   },

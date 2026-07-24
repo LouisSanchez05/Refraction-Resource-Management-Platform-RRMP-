@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { getAllRooms, checkAvailability } = require('../controllers/roomsController');
 
-router.get('/', getAllRooms);
-router.get('/:roomId/availability', checkAvailability);
+const {
+  getRooms,
+  getRoomById,
+  createRoom,
+} = require('../controllers/roomsController');
+
+const { isAdmin } = require('../middleware/auth');
+
+router.get('/', getRooms);
+router.get('/:roomId', getRoomById);
+router.post('/', isAdmin, createRoom);
 
 module.exports = router;

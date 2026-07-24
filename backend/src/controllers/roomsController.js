@@ -1,43 +1,93 @@
 const pool = require('../db/pool');
 
-// Get all rooms
-const getAllRooms = async (req, res) => {
+async function getRooms(req, res) {
   try {
-    const result = await pool.query('SELECT * FROM rooms ORDER BY name');
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM rooms
+      ORDER BY name ASC
+      `
+    );
+
+    return res.json(result.rows);
+  } catch (error) {
+    console.error('Get rooms error:', error);
+
+    return res.status(500).json({
+      error: 'Unable to retrieve rooms.',
+    });
   }
-};
+}
 
-// Check room availability
-const checkAvailability = async (req, res) => {
+async function getRoomById(req, res) {
   const { roomId } = req.params;
-  const { start_time, end_time } = req.query;
 
-  if (!start_time || !end_time) {
-    return res.status(400).json({ error: 'start_time and end_time are required' });
+  try {
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM rooms
+      WHERE id = $1
+      `,
+      [roomId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: 'Room not found.',
+      });
+    }
+
+    return res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Get room error:', error);
+
+    return res.status(500).json({
+      error: 'Unable to retrieve room.',
+    });
+  }
+}
+
+async function createRoom(req, res) {
+  const { name, type, capacity } = req.body;
+
+  if (!name || !type || !capacity) {
+    return res.status(400).json({
+      error: 'Name, type, and capacity are required.',
+    });
   }
 
   try {
     const result = await pool.query(
-      `SELECT * FROM reservations
-       WHERE room_id = $1
-       AND start_time < $2
-       AND end_time > $3`,
-      [roomId, end_time, start_time]
+      `
+      INSERT INTO rooms (
+        name,
+        type,
+        capacity
+      )
+      VALUES ($1, $2, $3)
+      RETURNING *
+      `,
+      [
+        name.trim(),
+        type.trim(),
+        Number(capacity),
+      ]
     );
 
-    if (result.rows.length > 0) {
-      return res.json({ available: false });
-    }
+    return res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Create room error:', error);
 
-    return res.json({ available: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({
+      error: 'Unable to create room.',
+    });
   }
-};
+}
 
-module.exports = { getAllRooms, checkAvailability };
+module.exports = {
+  getRooms,
+  getRoomById,
+  createRoom,
+};
