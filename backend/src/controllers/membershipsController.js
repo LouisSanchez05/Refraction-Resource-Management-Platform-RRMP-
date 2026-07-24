@@ -47,6 +47,55 @@ const getMembershipPlans = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+const createMembershipPlan = async (req, res) => {
+  const { name, monthly_hours, overage_rate } = req.body;
+
+  const trimmedName = name?.trim();
+  const monthlyHours = Number(monthly_hours);
+  const overageRate = Number(overage_rate);
+
+  if (!trimmedName) {
+    return res.status(400).json({
+      error: 'Membership plan name is required',
+    });
+  }
+
+  if (!Number.isFinite(monthlyHours) || monthlyHours < 0) {
+    return res.status(400).json({
+      error: 'Monthly hours must be zero or greater',
+    });
+  }
+
+  if (!Number.isFinite(overageRate) || overageRate < 0) {
+    return res.status(400).json({
+      error: 'Overage rate must be zero or greater',
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO membership_plans
+        (name, monthly_hours, overage_rate)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [trimmedName, monthlyHours, overageRate]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating membership plan:', err);
+
+    if (err.code === '23505') {
+      return res.status(409).json({
+        error: 'A membership plan with this name already exists',
+      });
+    }
+
+    res.status(500).json({
+      error: 'Server error',
+    });
+  }
+};
 
 // Get current monthly balance for a company
 const getCompanyBalance = async (req, res) => {
@@ -218,5 +267,6 @@ module.exports = {
   getMonthlyReport,
   updateMembershipPlan,
   getOverageReview,
-  getMembershipPlans
+  getMembershipPlans,
+  createMembershipPlan,
 };

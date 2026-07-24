@@ -7,8 +7,10 @@ const {
   getMonthlyReport,
   updateMembershipPlan,
   getOverageReview,
-  getMembershipPlans
+  getMembershipPlans,
+  createMembershipPlan,
 } = require('../controllers/membershipsController');
+
 
 const {
   isAuthenticated,
@@ -16,6 +18,7 @@ const {
 } = require('../middleware/auth');
 
 router.post('/assign', isAdmin, assignMembership);
+router.post('/plans', isAdmin, createMembershipPlan);
 
 router.get(
   '/balance/:companyId',
