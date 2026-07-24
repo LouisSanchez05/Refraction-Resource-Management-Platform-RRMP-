@@ -23,8 +23,12 @@ CREATE TABLE IF NOT EXISTS membership_plans (
 
 CREATE TABLE IF NOT EXISTS company_memberships (
     id SERIAL PRIMARY KEY,
-    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    plan_id INTEGER NOT NULL REFERENCES membership_plans(id) ON DELETE CASCADE,
+    company_id INTEGER NOT NULL
+        REFERENCES companies(id)
+        ON DELETE CASCADE,
+    plan_id INTEGER NOT NULL
+        REFERENCES membership_plans(id)
+        ON DELETE CASCADE,
     hours_used NUMERIC DEFAULT 0,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
@@ -37,15 +41,22 @@ CREATE TABLE IF NOT EXISTS rooms (
     name VARCHAR(255) NOT NULL,
     type VARCHAR(100) NOT NULL,
     capacity INTEGER,
+    description TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS reservations (
     id SERIAL PRIMARY KEY,
-    room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    room_id INTEGER NOT NULL
+        REFERENCES rooms(id)
+        ON DELETE CASCADE,
+    user_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+    company_id INTEGER NOT NULL
+        REFERENCES companies(id)
+        ON DELETE CASCADE,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     status VARCHAR(30) DEFAULT 'confirmed',

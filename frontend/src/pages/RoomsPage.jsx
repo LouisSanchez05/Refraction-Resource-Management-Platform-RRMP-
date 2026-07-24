@@ -15,6 +15,7 @@ function RoomsPage() {
     name: '',
     type: '',
     capacity: '',
+    description: '',
   });
 
   useEffect(() => {
@@ -35,14 +36,36 @@ function RoomsPage() {
   function handleInputChange(event) {
     const { name, value } = event.target;
 
-    setNewRoom((current) => ({
-      ...current,
+    setNewRoom((currentRoom) => ({
+      ...currentRoom,
       [name]: value,
     }));
   }
 
   async function handleCreateRoom(event) {
     event.preventDefault();
+
+    const name = newRoom.name.trim();
+    const type = newRoom.type.trim();
+    const description = newRoom.description.trim();
+
+    if (!name || !type) {
+      setError('Room name and type are required.');
+      return;
+    }
+
+    const capacity =
+      newRoom.capacity === ''
+        ? null
+        : Number(newRoom.capacity);
+
+    if (
+      capacity !== null &&
+      (!Number.isInteger(capacity) || capacity < 1)
+    ) {
+      setError('Capacity must be a whole number greater than zero.');
+      return;
+    }
 
     setSubmitting(true);
     setMessage('');
@@ -52,21 +75,26 @@ function RoomsPage() {
       const createdRoom = await apiRequest('/api/rooms', {
         method: 'POST',
         body: JSON.stringify({
-          name: newRoom.name.trim(),
-          type: newRoom.type.trim(),
-          capacity: Number(newRoom.capacity),
+          name,
+          type,
+          capacity,
+          description: description || null,
         }),
       });
 
-      setRooms((currentRooms) => [
-        ...currentRooms,
-        createdRoom.room ?? createdRoom,
-      ]);
+      const roomToAdd = createdRoom.room ?? createdRoom;
+
+      setRooms((currentRooms) =>
+        [...currentRooms, roomToAdd].sort((a, b) =>
+          a.name.localeCompare(b.name)
+        )
+      );
 
       setNewRoom({
         name: '',
         type: '',
         capacity: '',
+        description: '',
       });
 
       setShowForm(false);
@@ -78,17 +106,37 @@ function RoomsPage() {
     }
   }
 
+  function handleCancelForm() {
+    setShowForm(false);
+    setError('');
+
+    setNewRoom({
+      name: '',
+      type: '',
+      capacity: '',
+      description: '',
+    });
+  }
+
   return (
     <main>
       <div className="page-heading">
         <div>
           <h1>Rooms</h1>
-          <p>View and manage available meeting rooms.</p>
+          <p>View and manage available spaces.</p>
         </div>
 
         <button
           type="button"
-          onClick={() => setShowForm((current) => !current)}
+          onClick={() => {
+            if (showForm) {
+              handleCancelForm();
+            } else {
+              setShowForm(true);
+              setMessage('');
+              setError('');
+            }
+          }}
         >
           {showForm ? 'Cancel' : 'Add Room'}
         </button>
@@ -104,78 +152,125 @@ function RoomsPage() {
           >
             <label>
               Room name
+
               <input
                 type="text"
                 name="name"
                 value={newRoom.name}
                 onChange={handleInputChange}
-                placeholder="Conference Room A"
+                placeholder="Example: Lamarr"
+                disabled={submitting}
                 required
               />
             </label>
 
             <label>
               Room type
+
               <input
                 type="text"
                 name="type"
                 value={newRoom.type}
                 onChange={handleInputChange}
-                placeholder="Conference room"
+                placeholder="Example: Meeting Room"
+                disabled={submitting}
                 required
               />
             </label>
 
             <label>
               Capacity
+
               <input
                 type="number"
                 name="capacity"
                 min="1"
+                step="1"
                 value={newRoom.capacity}
                 onChange={handleInputChange}
-                required
+                placeholder="8"
+                disabled={submitting}
               />
             </label>
 
-            <button type="submit" disabled={submitting}>
-              {submitting ? 'Creating...' : 'Create Room'}
+            <label>
+              Description
+
+              <textarea
+                name="description"
+                value={newRoom.description}
+                onChange={handleInputChange}
+                placeholder="Describe the room, equipment, lighting, booking rules, or other details."
+                rows="5"
+                disabled={submitting}
+              />
+            </label>
+
+            <button
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting
+                ? 'Creating...'
+                : 'Create Room'}
             </button>
           </form>
         </section>
       )}
 
-      {message && <p className="success-message">{message}</p>}
+      {message && (
+        <p className="success-message">
+          {message}
+        </p>
+      )}
 
       {loading && <p>Loading rooms...</p>}
-      {error && <p>Error: {error}</p>}
+
+      {error && (
+        <p className="error-message">
+          Error: {error}
+        </p>
+      )}
 
       {!loading && !error && rooms.length === 0 && (
         <p>No rooms found.</p>
       )}
 
-      <div className="room-grid">
-        {rooms.map((room) => (
-          <article className="room-card" key={room.id}>
-            <h2>{room.name}</h2>
+      {!loading && rooms.length > 0 && (
+        <div className="room-grid">
+          {rooms.map((room) => (
+            <article
+              className="room-card"
+              key={room.id}
+            >
+              <h2>{room.name}</h2>
 
-            <p>
-              <strong>Type:</strong> {room.type}
-            </p>
+              <p>
+                <strong>Type:</strong>{' '}
+                {room.type}
+              </p>
 
-            <p>
-              <strong>Capacity:</strong>{' '}
-              {room.capacity ?? 'N/A'}
-            </p>
+              <p>
+                <strong>Capacity:</strong>{' '}
+                {room.capacity ?? 'N/A'}
+              </p>
 
-            <Link to={`/rooms/${room.id}`}>
-              <button type="button">
-                Check Availability
-              </button>
-            </Link>
-          </article>
-        ))}
-      </div>
+              {room.description && (
+                <p>
+                  <strong>Description:</strong>{' '}
+                  {room.description}
+                </p>
+              )}
+
+              <Link to={`/rooms/${room.id}`}>
+                <button type="button">
+                  Check Availability
+                </button>
+              </Link>
+            </article>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

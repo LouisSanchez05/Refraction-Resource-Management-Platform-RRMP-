@@ -50,11 +50,31 @@ async function getRoomById(req, res) {
 }
 
 async function createRoom(req, res) {
-  const { name, type, capacity } = req.body;
+  const { name, type, capacity, description } = req.body;
 
-  if (!name || !type || !capacity) {
+  const trimmedName = name?.trim();
+  const trimmedType = type?.trim();
+  const trimmedDescription = description?.trim();
+
+  if (!trimmedName || !trimmedType) {
     return res.status(400).json({
-      error: 'Name, type, and capacity are required.',
+      error: 'Name and type are required.',
+    });
+  }
+
+  const parsedCapacity =
+    capacity === null ||
+    capacity === undefined ||
+    capacity === ''
+      ? null
+      : Number(capacity);
+
+  if (
+    parsedCapacity !== null &&
+    (!Number.isInteger(parsedCapacity) || parsedCapacity < 1)
+  ) {
+    return res.status(400).json({
+      error: 'Capacity must be a whole number greater than zero.',
     });
   }
 
@@ -64,15 +84,17 @@ async function createRoom(req, res) {
       INSERT INTO rooms (
         name,
         type,
-        capacity
+        capacity,
+        description
       )
-      VALUES ($1, $2, $3)
+      VALUES ($1, $2, $3, $4)
       RETURNING *
       `,
       [
-        name.trim(),
-        type.trim(),
-        Number(capacity),
+        trimmedName,
+        trimmedType,
+        parsedCapacity,
+        trimmedDescription || null,
       ]
     );
 
