@@ -5,6 +5,10 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 require('./src/middleware/passport');
 const authRoutes = require('./src/routes/auth');
 const companyRoutes = require('./src/routes/companies');
@@ -31,8 +35,11 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite:
+        process.env.NODE_ENV === 'production'
+          ? 'none'
+          : 'lax',
     },
   })
 );
