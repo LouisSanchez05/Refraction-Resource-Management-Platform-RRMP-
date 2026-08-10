@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { apiRequest } from '../services/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const memberLinks = [
   {
@@ -60,9 +62,12 @@ function Navbar() {
     loadUser();
   }, []);
 
-  function handleLogout() {
-    window.location.href = 'http://localhost:3000/auth/logout';
-  }
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+function handleLogout() {
+  window.location.href = `${API_BASE_URL}/auth/logout`;
+}
 
   const isAdmin = user?.role === 'admin';
 
@@ -144,44 +149,44 @@ function Navbar() {
 
       <div className="sidebar-footer">
         {user ? (
-          <>
-            <div className="sidebar-user">
-              <div className="user-avatar">
-                {user.name
-                  ?.split(' ')
-                  .map((name) => name[0])
-                  .slice(0, 2)
-                  .join('')
-                  .toUpperCase() || 'U'}
-              </div>
+  <>
+    <div className="sidebar-user">
+      <div className="user-avatar">
+        {user.name
+          ?.split(' ')
+          .map((name) => name[0])
+          .slice(0, 2)
+          .join('')
+          .toUpperCase() || 'U'}
+      </div>
 
-              {!collapsed && (
-                <div className="user-details">
-                  <strong>{user.name}</strong>
-                  <span>{user.role}</span>
-                </div>
-              )}
-            </div>
+      {!collapsed && (
+        <div className="user-details">
+          <strong>{user.name}</strong>
+          <span>{user.role}</span>
+        </div>
+      )}
+    </div>
 
-            <button
-              type="button"
-              className="logout-button"
-              onClick={handleLogout}
-              title={collapsed ? 'Logout' : undefined}
-            >
-              <span className="sidebar-icon">↪</span>
-              {!collapsed && <span>Logout</span>}
-            </button>
-          </>
-        ) : (
-          <a
-            className="login-button"
-            href="http://localhost:3000/auth/google"
-          >
-            <span className="sidebar-icon">→</span>
-            {!collapsed && <span>Login</span>}
-          </a>
-        )}
+    <button
+      type="button"
+      className="logout-button"
+      onClick={handleLogout}
+      title={collapsed ? 'Logout' : undefined}
+    >
+      <span className="sidebar-icon">↪</span>
+      {!collapsed && <span>Logout</span>}
+    </button>
+  </>
+) : (
+  <a
+    className="login-button"
+    href={`${API_BASE_URL}/auth/google`}
+  >
+    <span className="sidebar-icon">→</span>
+    {!collapsed && <span>Login</span>}
+  </a>
+)}
       </div>
     </aside>
   );
